@@ -14,6 +14,18 @@ export default function TabLayout() {
       label: 'Map',
     },
     {
+      name: 'community',
+      route: '/(tabs)/community',
+      icon: 'bubble.right.fill',
+      label: 'Community',
+    },
+    {
+      name: 'discover',
+      route: '/(tabs)/discover',
+      icon: 'sparkles',
+      label: 'Discover',
+    },
+    {
       name: 'add-beer',
       route: '/(tabs)/add-beer',
       icon: 'plus.circle.fill',
@@ -33,6 +45,14 @@ export default function TabLayout() {
         <NativeTabs.Trigger name="(home)">
           <Icon sf="map.fill" drawable="ic_map" />
           <Label>Map</Label>
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="community">
+          <Icon sf="bubble.right.fill" drawable="ic_chat" />
+          <Label>Community</Label>
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="discover">
+          <Icon sf="sparkles" drawable="ic_star" />
+          <Label>Discover</Label>
         </NativeTabs.Trigger>
         <NativeTabs.Trigger name="add-beer">
           <Icon sf="plus.circle.fill" drawable="ic_add" />
@@ -55,6 +75,8 @@ export default function TabLayout() {
         }}
       >
         <Stack.Screen name="(home)" />
+        <Stack.Screen name="community" />
+        <Stack.Screen name="discover" />
         <Stack.Screen name="add-beer" />
         <Stack.Screen name="profile" />
       </Stack>

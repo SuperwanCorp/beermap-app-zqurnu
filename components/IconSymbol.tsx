@@ -157,6 +157,18 @@ const MAPPING = {
   "line.3.horizontal.decrease": "filter-list",
   "arrow.up.arrow.down": "sort",
 
+  // Social & Community
+  "hand.thumbsup.fill": "thumb-up",
+  "hand.thumbsup": "thumb-up-off-alt",
+  "bubble.right.fill": "chat-bubble",
+  "bubble.right": "chat-bubble-outline",
+  "person.badge.plus.fill": "person-add",
+  "person.badge.minus.fill": "person-remove",
+  "star.circle.fill": "stars",
+  "flame.fill": "local-fire-department",
+  "globe": "public",
+  "sparkles": "auto-awesome",
+
   // Visibility & Display
   "eye.fill": "visibility",
   "eye.slash.fill": "visibility-off",

@@ -1,8 +1,7 @@
-
 {
   "expo": {
-    "name": "BeerMap",
-    "slug": "beermap",
+    "name": "beermap-app-zqurnu",
+    "slug": "beermap-app-zqurnu",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/natively-dark.png",
@@ -28,7 +27,7 @@
         "backgroundColor": "#F5F5DC"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.beermap.app",
+      "package": "com.superwancorp.beermap",
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION"
