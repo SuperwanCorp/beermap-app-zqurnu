@@ -1,104 +1,123 @@
-import React from "react";
-import { Stack, Link } from "expo-router";
-import { FlatList, Pressable, StyleSheet, View, Text, Alert, Platform } from "react-native";
-import { IconSymbol } from "@/components/IconSymbol";
-import { GlassView } from "expo-glass-effect";
-import { useTheme } from "@react-navigation/native";
 
-const ICON_COLOR = "#007AFF";
+import React, { useState, useEffect } from "react";
+import { Stack } from "expo-router";
+import { StyleSheet, View, Text, Platform, Pressable, Alert } from "react-native";
+import { useTheme } from "@react-navigation/native";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { colors } from "@/styles/commonStyles";
+import { IconSymbol } from "@/components/IconSymbol";
+import { router } from "expo-router";
+
+interface BeerSpot {
+  id: string;
+  name: string;
+  type: string;
+  rating: number;
+  comment: string;
+  latitude: number;
+  longitude: number;
+  photo?: string;
+}
 
 export default function HomeScreen() {
   const theme = useTheme();
-  const modalDemos = [
+  const [beerSpots, setBeerSpots] = useState<BeerSpot[]>([
     {
-      title: "Standard Modal",
-      description: "Full screen modal presentation",
-      route: "/modal",
-      color: "#007AFF",
+      id: "1",
+      name: "IPA Delight",
+      type: "IPA",
+      rating: 4.5,
+      comment: "Great hoppy flavor",
+      latitude: 37.7749,
+      longitude: -122.4194,
     },
     {
-      title: "Form Sheet",
-      description: "Bottom sheet with detents and grabber",
-      route: "/formsheet",
-      color: "#34C759",
+      id: "2",
+      name: "Smooth Lager",
+      type: "Lager",
+      rating: 4,
+      comment: "Crisp and refreshing",
+      latitude: 37.8044,
+      longitude: -122.2712,
     },
-    {
-      title: "Transparent Modal",
-      description: "Overlay without obscuring background",
-      route: "/transparent-modal",
-      color: "#FF9500",
-    }
-  ];
+  ]);
 
-  const renderModalDemo = ({ item }: { item: (typeof modalDemos)[0] }) => (
-    <GlassView style={[
-      styles.demoCard,
-      Platform.OS !== 'ios' && { backgroundColor: theme.dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }
-    ]} glassEffectStyle="regular">
-      <View style={[styles.demoIcon, { backgroundColor: item.color }]}>
-        <IconSymbol name="square.grid.3x3" color="white" size={24} />
-      </View>
-      <View style={styles.demoContent}>
-        <Text style={[styles.demoTitle, { color: theme.colors.text }]}>{item.title}</Text>
-        <Text style={[styles.demoDescription, { color: theme.dark ? '#98989D' : '#666' }]}>{item.description}</Text>
-      </View>
-      <Link href={item.route as any} asChild>
-        <Pressable>
-          <GlassView style={[
-            styles.tryButton,
-            Platform.OS !== 'ios' && { backgroundColor: theme.dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)' }
-          ]} glassEffectStyle="clear">
-            <Text style={[styles.tryButtonText, { color: theme.colors.primary }]}>Try It</Text>
-          </GlassView>
-        </Pressable>
-      </Link>
-    </GlassView>
-  );
+  const handleMapPress = (e: any) => {
+    const { latitude, longitude } = e.nativeEvent.coordinate;
+    router.push({
+      pathname: "/(tabs)/add-beer",
+      params: { latitude: latitude.toString(), longitude: longitude.toString() },
+    });
+  };
 
   const renderHeaderRight = () => (
     <Pressable
-      onPress={() => Alert.alert("Not Implemented", "This feature is not implemented yet")}
+      onPress={() => router.push("/(tabs)/add-beer")}
       style={styles.headerButtonContainer}
     >
-      <IconSymbol name="plus" color={theme.colors.primary} />
+      <IconSymbol name="plus" color={colors.secondary} size={24} />
     </Pressable>
   );
 
-  const renderHeaderLeft = () => (
-    <Pressable
-      onPress={() => Alert.alert("Not Implemented", "This feature is not implemented yet")}
-      style={styles.headerButtonContainer}
-    >
-      <IconSymbol
-        name="gear"
-        color={theme.colors.primary}
-      />
-    </Pressable>
-  );
+  if (Platform.OS === "web") {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Stack.Screen
+          options={{
+            title: "BeerMap",
+            headerRight: renderHeaderRight,
+          }}
+        />
+        <View style={styles.webPlaceholder}>
+          <Text style={[styles.webPlaceholderText, { color: colors.text }]}>
+            📍 Maps are not supported on web in Natively
+          </Text>
+          <Text style={[styles.webPlaceholderSubtext, { color: colors.textSecondary }]}>
+            Please use the iOS or Android app to view the map
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <>
-      {Platform.OS === 'ios' && (
-        <Stack.Screen
-          options={{
-            title: "Building the app...",
-            headerRight: renderHeaderRight,
-            headerLeft: renderHeaderLeft,
+      <Stack.Screen
+        options={{
+          title: "BeerMap",
+          headerRight: renderHeaderRight,
+        }}
+      />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          style={styles.map}
+          initialRegion={{
+            latitude: 37.7749,
+            longitude: -122.4194,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
           }}
-        />
-      )}
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <FlatList
-          data={modalDemos}
-          renderItem={renderModalDemo}
-          keyExtractor={(item) => item.route}
-          contentContainerStyle={[
-            styles.listContainer,
-            Platform.OS !== 'ios' && styles.listContainerWithTabBar
-          ]}
-          contentInsetAdjustmentBehavior="automatic"
-          showsVerticalScrollIndicator={false}
-        />
+          onPress={handleMapPress}
+        >
+          {beerSpots.map((spot) => (
+            <Marker
+              key={spot.id}
+              coordinate={{
+                latitude: spot.latitude,
+                longitude: spot.longitude,
+              }}
+              title={spot.name}
+              description={`${spot.type} - Rating: ${spot.rating}/5`}
+              onPress={() => {
+                Alert.alert(
+                  spot.name,
+                  `Type: ${spot.type}\nRating: ${spot.rating}/5\n${spot.comment}`
+                );
+              }}
+            />
+          ))}
+        </MapView>
       </View>
     </>
   );
@@ -107,55 +126,28 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor handled dynamically
   },
-  listContainer: {
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-  },
-  listContainerWithTabBar: {
-    paddingBottom: 100, // Extra padding for floating tab bar
-  },
-  demoCard: {
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  demoIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  demoContent: {
+  map: {
     flex: 1,
   },
-  demoTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-    // color handled dynamically
-  },
-  demoDescription: {
-    fontSize: 14,
-    lineHeight: 18,
-    // color handled dynamically
-  },
   headerButtonContainer: {
-    padding: 6,
+    padding: 8,
+    marginRight: 8,
   },
-  tryButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 6,
+  webPlaceholder: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
   },
-  tryButtonText: {
+  webPlaceholderText: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  webPlaceholderSubtext: {
     fontSize: 14,
-    fontWeight: '600',
-    // color handled dynamically
+    textAlign: "center",
   },
 });

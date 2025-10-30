@@ -3,15 +3,21 @@ import { Platform } from 'react-native';
 import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
 import { Stack } from 'expo-router';
 import FloatingTabBar, { TabBarItem } from '@/components/FloatingTabBar';
+import { colors } from '@/styles/commonStyles';
 
 export default function TabLayout() {
-  // Define the tabs configuration
   const tabs: TabBarItem[] = [
     {
       name: '(home)',
       route: '/(tabs)/(home)/',
-      icon: 'house.fill',
-      label: 'Home',
+      icon: 'map.fill',
+      label: 'Map',
+    },
+    {
+      name: 'add-beer',
+      route: '/(tabs)/add-beer',
+      icon: 'plus.circle.fill',
+      label: 'Add Beer',
     },
     {
       name: 'profile',
@@ -21,13 +27,16 @@ export default function TabLayout() {
     },
   ];
 
-  // Use NativeTabs for iOS, custom FloatingTabBar for Android and Web
   if (Platform.OS === 'ios') {
     return (
       <NativeTabs>
         <NativeTabs.Trigger name="(home)">
-          <Icon sf="house.fill" drawable="ic_home" />
-          <Label>Home</Label>
+          <Icon sf="map.fill" drawable="ic_map" />
+          <Label>Map</Label>
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="add-beer">
+          <Icon sf="plus.circle.fill" drawable="ic_add" />
+          <Label>Add Beer</Label>
         </NativeTabs.Trigger>
         <NativeTabs.Trigger name="profile">
           <Icon sf="person.fill" drawable="ic_profile" />
@@ -37,16 +46,16 @@ export default function TabLayout() {
     );
   }
 
-  // For Android and Web, use Stack navigation with custom floating tab bar
   return (
     <>
       <Stack
         screenOptions={{
           headerShown: false,
-          animation: 'none', // Remove fade animation to prevent black screen flash
+          animation: 'none',
         }}
       >
         <Stack.Screen name="(home)" />
+        <Stack.Screen name="add-beer" />
         <Stack.Screen name="profile" />
       </Stack>
       <FloatingTabBar tabs={tabs} />
